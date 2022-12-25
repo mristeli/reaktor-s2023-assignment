@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <title>
+            Quick and dirty Reaktor trainee 2023 pre-assignment
+        </title>
+    </head>
+    <script>
+        function pilotElement(pilot) {
+            // and this
+            const prettyTimestamp = new Date(pilot.timestamp).toLocaleString()
+            const elem = document.createElement('li')
+            elem.appendChild(document.createTextNode(pilot.name))
+            elem.appendChild(document.createTextNode(' '))
+            elem.appendChild(document.createTextNode(prettyTimestamp))
+            return elem
+        }
+
+        function updatePilots(json) {
+            // why use React when you can do this?
+            const pilotContainer = document.getElementById('pilots')
+            const updatedPilots = json.map(pilot => pilotElement(pilot))
+            // ... unrolling probably not supported by IE lol
+            pilotContainer.replaceChildren(...updatedPilots)
+        }
+
+        function poller() {
+            fetch('/badPilots')
+                .then(r => r.json())
+                .then(updatePilots).catch(_ => {}) // retry on error
+        }
+        setInterval(poller, 100)
+    </script>
+    <body>
+        <h2>Badly behaving pilots in order of last seen</h2>
+        <ol id="pilots">
+            Loading...
+        </ol>
+    </body>
+</html>
